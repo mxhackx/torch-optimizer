@@ -1,0 +1,192 @@
+# Roadmap IA — Activation (20) + TorchOptimizer (30)
+
+**Objectif :** implémenter et tester 50 éléments en réutilisant sa bibliothèque `Vector` / `Matrix`, sans dépendre de NumPy ou PyTorch pour les mécanismes qu'on cherche à comprendre.
+
+**Règle de validation :** cocher un élément seulement quand l'implémentation fonctionne, que les cas limites sont testés et que l'on peut expliquer son fonctionnement.
+
+## A. Activation — 20 éléments
+
+### API et fonctions fondamentales
+- [ ] **A01 — Architecture de `Activation`** : API cohérente, validation des entrées et erreurs explicites.
+- [ ] **A02 — Identité** : implémenter \(f(x)=x\).
+- [ ] **A03 — Sigmoid** : implémentation numériquement stable.
+- [ ] **A04 — Dérivée de sigmoid** : calcul à partir de l'entrée ou de la sortie, avec convention documentée.
+- [ ] **A05 — Tanh** : transformation et propriétés.
+- [ ] **A06 — Dérivée de tanh** : réutiliser la sortie quand c'est pertinent.
+- [ ] **A07 — ReLU** : comportement sur les valeurs positives, négatives et nulles.
+- [ ] **A08 — Dérivée de ReLU** : choisir et documenter la convention en zéro.
+- [ ] **A09 — Leaky ReLU** : pente négative configurable.
+- [ ] **A10 — Dérivée de Leaky ReLU** : gérer correctement la pente et le point zéro.
+- [ ] **A11 — Softmax** : calcul stable, notamment par soustraction du maximum.
+- [ ] **A12 — Jacobienne de Softmax** : dérivées entre les composantes du vecteur.
+- [ ] **A13 — Log-Softmax** : calcul stable en espace logarithmique.
+- [ ] **A14 — ELU** : transformation avec paramètre alpha.
+- [ ] **A15 — Dérivée de ELU** : dérivée par morceaux.
+- [ ] **A16 — GELU** : implémenter une approximation pratique et la documenter.
+- [ ] **A17 — Dérivée de GELU** : cohérente avec l'approximation choisie.
+- [ ] **A18 — Activations sur `Vector`** : API vectorielle uniforme.
+- [ ] **A19 — Activations sur `Matrix`** : application élément par élément ou par ligne selon la fonction.
+- [ ] **A20 — Tests numériques** : cas limites, valeurs extrêmes, différences finies et stabilité.
+binary step
+## B. TorchOptimizer — 30 éléments
+
+### Optimiseurs et mises à jour
+- [ ] **O01 — Architecture de `TorchOptimizer`** : API commune, validation et séparation des responsabilités.
+- [ ] **O02 — Paramètres et gradients** : représenter les paramètres entraînables et leurs gradients.
+- [ ] **O03 — SGD** : mise à jour de base des paramètres.
+- [ ] **O04 — Learning rate** : taux d'apprentissage configurable et vérifié.
+- [ ] **O05 — Batch Gradient Descent** : mise à jour après calcul du gradient sur le dataset complet.
+- [ ] **O06 — Mini-batch SGD** : mises à jour par petits lots.
+- [ ] **O07 — SGD par exemple** : mise à jour à partir d'un exemple à la fois.
+- [ ] **O08 — Momentum** : accumulation d'une moyenne de directions précédentes.
+- [ ] **O09 — Nesterov Momentum** : variante avec évaluation anticipée du gradient.
+- [ ] **O10 — AdaGrad** : taux d'apprentissage adaptatif par paramètre.
+- [ ] **O11 — RMSprop** : moyenne mobile des gradients au carré.
+- [ ] **O12 — Adam** : moments du premier et du second ordre avec correction du biais.
+- [ ] **O13 — AdamW** : weight decay découplé de la mise à jour adaptative.
+- [ ] **O14 — Adadelta** : adaptation des mises à jour à partir de statistiques mobiles.
+- [ ] **O15 — Adamax** : variante d'Adam basée sur une norme infinie.
+- [ ] **O16 — Nadam** : Adam combiné à une variante de momentum de type Nesterov.
+
+### Robustesse et état
+- [ ] **O17 — Weight decay** : contrôler la décroissance des poids et distinguer les variantes couplées/découplées.
+- [ ] **O18 — Gradient clipping par valeur** : borner chaque composante du gradient.
+- [ ] **O19 — Gradient clipping par norme** : borner la norme globale du gradient.
+- [ ] **O20 — Groupes de paramètres** : hyperparamètres différents selon les groupes.
+- [ ] **O21 — État interne** : compteurs, moments et buffers nécessaires aux optimiseurs.
+- [ ] **O22 — Réinitialisation** : réinitialiser l'état sans laisser de valeurs résiduelles.
+- [ ] **O23 — Sauvegarde/restauration** : sérialiser puis restaurer l'état de l'optimiseur.
+
+### Entraînement et comparaison
+- [ ] **O24 — Scheduler StepLR** : diminuer le learning rate à intervalles définis.
+- [ ] **O25 — Scheduler exponentiel** : décroissance exponentielle.
+- [ ] **O26 — Cosine Annealing** : décroissance suivant une courbe cosinus.
+- [ ] **O27 — Warmup** : augmenter progressivement le learning rate au début.
+- [ ] **O28 — Early stopping** : arrêter selon une métrique de validation et une patience configurable.
+- [ ] **O29 — Loss et convergence** : historique de la loss, seuils d'arrêt et limite d'itérations.
+- [ ] **O30 — Benchmark comparatif** : comparer les optimiseurs sur les mêmes données, initialisations et critères.
+
+## Ordre conseillé
+
+1. Construire d'abord `Activation` : identité, sigmoid, tanh, ReLU, Leaky ReLU et dérivées.
+2. Ajouter Softmax, Log-Softmax, ELU et GELU ; tester les dérivées par différences finies.
+3. Construire SGD puis batch/mini-batch, Momentum et Adam.
+4. Ajouter les autres optimiseurs, la robustesse, les états, les schedulers et les benchmarks.
+
+## Exigences de qualité
+
+Pour chaque fonction ou optimiseur :
+- Tester les entrées valides, les dimensions incompatibles et les cas limites.
+- Éviter les débordements et divisions par zéro.
+- Vérifier les gradients analytiques par différences finies lorsque c'est pertinent.
+- Documenter les conventions mathématiques et les hyperparamètres.
+- Comparer les résultats à une référence fiable sur de petits exemples, sans remplacer l'implémentation « from scratch » par cette référence.
+- Mesurer les performances et la convergence ; ne pas conclure qu'un optimiseur est meilleur à partir d'un seul essai.
+
+## Ce que cette roadmap ne couvre pas à elle seule
+
+Elle ne constitue pas un framework de deep learning complet : il faut aussi un moteur de tenseurs/autograd fiable, des fonctions de coût, une boucle d'entraînement, des datasets, une évaluation correcte et des projets end-to-end. La roadmap doit compléter ces éléments, pas les remplacer.
+
+
+2. Variantes de ReLU
+- Leaky ReLU
+- Parametric ReLU (PReLU)
+- Randomized Leaky ReLU (RReLU)
+- ReLU6
+- Thresholded ReLU
+- Noisy ReLU
+- SReLU — S-shaped ReLU
+- CReLU — Concatenated ReLU
+- FReLU — Funnel ReLU
+- ReLU with learnable parameters
+3. Fonctions exponentielles et lisses
+- ELU — Exponential Linear Unit
+- SELU — Scaled Exponential Linear Unit
+- CELU — Continuously Differentiable ELU
+- GELU — Gaussian Error Linear Unit
+- SiLU — Sigmoid Linear Unit
+- Swish — famille de fonctions dont SiLU est une version particulière
+- Mish
+- Softplus
+- Softsign
+- Bent Identity
+- Gaussian
+- Sine
+- Cosine
+- Exponential
+- Logistic
+- Arctan
+- Soft Clipping
+4. Fonctions pour les sorties et les probabilités
+- Softmax
+- LogSoftmax
+- Sparsemax
+- Entmax
+- α-Entmax
+- Hardmax
+- Normalized Exponential
+- Softmin
+- Logistic Sigmoid
+- Hard Sigmoid
+- Hard Tanh
+- Hard Swish
+- Hard Mish
+Attention : certaines de ces fonctions sont des variantes d'une même idée, et plusieurs servent principalement aux couches de sortie plutôt qu'aux couches cachées.
+5. Fonctions adaptatives ou paramétriques
+Ici, certains paramètres sont appris pendant l'entraînement ou adaptés aux données.
+- PReLU
+- APReLU — Adaptive PReLU
+- FReLU
+- Acon
+- Meta-ACON
+- Dynamic ReLU
+- Piecewise Linear Unit (PLU)
+- Adaptive Piecewise Linear
+- Trainable Swish
+- Rational Activation Functions
+- Spline-based Activations
+- Maxout
+- PAU — Polynomial Activation Unit
+- Adaptive Tanh
+6. Fonctions polynomiales et rationnelles
+- Polynomial Activation
+- Quadratic Activation
+- Cubic Activation
+- Rational Activation
+- Padé Activation
+- Chebyshev Polynomial Activation
+- Legendre Polynomial Activation
+- Hermite Polynomial Activation
+Ces familles peuvent servir à approximer des transformations non linéaires plus complexes.
+7. Fonctions utilisées dans des architectures particulières
+- GLU — Gated Linear Unit
+- GEGLU — GELU Gated Linear Unit
+- SwiGLU — Swish Gated Linear Unit
+- ReGLU — ReLU Gated Linear Unit
+- Bilinear
+- Gated Tanh
+- Gated Sigmoid
+- ModReLU — notamment pour les réseaux complexes
+- zReLU — réseaux à valeurs complexes
+- Cardioid — réseaux à valeurs complexes
+Les GLU et leurs variantes combinent des transformations et des mécanismes de contrôle : ce ne sont pas toutes de simples fonctions scalaires appliquées indépendamment à chaque neurone.
+8. Fonctions particulières ou moins courantes
+- Soft Exponential
+- ISRU — Inverse Square Root Unit
+- ISRLU — Inverse Square Root Linear Unit
+- SQNL — Square Nonlinearity
+- Elliott
+- Symmetrical Elliott
+- Softsign
+- LogSigmoid
+- LiSHT
+- TanhExp
+- Snake
+- Periodic Activation
+- Fourier Activation
+- Sinc
+- Absolute Value
+- Sign
+- Logarithmic Activation
+- Gaussian Error Linear Unit approximations
+Certaines sont expérimentales ou utilisées dans des domaines spécialisés, notamment les réseaux périodiques et les représentations de signaux.
