@@ -280,7 +280,7 @@ class Vector:
         return cls([0] * v)
 
     def empty(self):
-        return len(v.vector) == 0
+        return len(self.vector) == 0
 
     def __sum__(self):
         return sum(self.vector)
